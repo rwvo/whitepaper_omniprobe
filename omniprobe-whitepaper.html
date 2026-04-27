@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Omniprobe White Paper</title>
+  <style>
+    :root {
+      --bg: #eef3f9;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: #ffffff;
+      --ink: #132235;
+      --muted: #59687a;
+      --line: rgba(19, 34, 53, 0.12);
+      --blue: #0b5fff;
+      --blue-soft: rgba(11, 95, 255, 0.10);
+      --green: #157f52;
+      --green-soft: rgba(21, 127, 82, 0.08);
+      --gold: #d9a441;
+      --gold-soft: rgba(217, 164, 65, 0.12);
+      --red: #c2413a;
+      --red-soft: rgba(194, 65, 58, 0.10);
+      --shadow: 0 22px 56px rgba(16, 32, 51, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max: 1260px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(11, 95, 255, 0.14), transparent 28rem),
+        radial-gradient(circle at top right, rgba(21, 127, 82, 0.10), transparent 24rem),
+        linear-gradient(180deg, #f7fafd 0%, #edf3f9 100%);
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 44px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background:
+        linear-gradient(135deg, rgba(11, 95, 255, 0.08), rgba(11, 95, 255, 0.02)),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(19, 34, 53, 0.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 0.92;
+      letter-spacing: -0.06em;
+      max-width: 18ch;
+    }
+
+    .subtitle {
+      max-width: 68ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 30px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .metric .label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .metric .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      padding: 24px 22px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .toc h2 {
+      margin: 0 0 14px;
+      font-size: 0.92rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .toc li { margin: 7px 0; }
+
+    .content {
+      display: grid;
+      gap: 22px;
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: 30px 30px 32px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.55rem, 2.2vw, 2.1rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .section h3 {
+      margin: 22px 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section p {
+      margin: 0 0 15px;
+      color: var(--ink);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .section p.muted,
+    .section .muted { color: var(--muted); }
+
+    /* ── Note callout ── */
+    .note {
+      padding: 18px 18px 18px 20px;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      background: var(--blue-soft);
+      color: var(--ink);
+      margin: 18px 0;
+      line-height: 1.7;
+    }
+
+    .note.green {
+      border-left-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .note.gold {
+      border-left-color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top: 16px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+    }
+
+    .card h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 0.96rem;
+    }
+
+    /* ── Pills ── */
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 4px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(19, 34, 53, 0.04);
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .pill.blue {
+      background: var(--blue-soft);
+      border-color: rgba(11, 95, 255, 0.18);
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .pill.green {
+      background: var(--green-soft);
+      border-color: rgba(21, 127, 82, 0.18);
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* ── Diagrams ── */
+    .diagram {
+      margin: 20px 0 8px;
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247, 250, 253, 0.95));
+      overflow-x: auto;
+    }
+
+    .diagram-label {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .node {
+      min-width: 130px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(11, 95, 255, 0.16);
+      background: rgba(11, 95, 255, 0.07);
+      color: var(--ink);
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      font-size: 0.92rem;
+    }
+
+    .node.alt {
+      background: rgba(21, 127, 82, 0.08);
+      border-color: rgba(21, 127, 82, 0.18);
+    }
+
+    .node.warn {
+      background: rgba(217, 164, 65, 0.12);
+      border-color: rgba(217, 164, 65, 0.24);
+    }
+
+    .node.red {
+      background: var(--red-soft);
+      border-color: rgba(194, 65, 58, 0.18);
+    }
+
+    .node small {
+      display: block;
+      font-weight: 400;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    /* ── Sequences ── */
+    .sequence {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .sequence .step {
+      position: relative;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sequence .step .num {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      background: var(--blue);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .sequence .step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.98rem;
+    }
+
+    .sequence .step span {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    /* ── Table-like rows ── */
+    .table-like {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 220px minmax(0, 1fr);
+      padding: 15px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+
+    .row .term {
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .row .desc {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Comparison table ── */
+    .cmp-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 16px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .cmp-table th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(19, 34, 53, 0.04);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cmp-table td {
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .cmp-table tr:last-child td { border-bottom: none; }
+
+    .cmp-table .tool-name {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .cmp-table .check { color: var(--green); font-weight: 700; }
+    .cmp-table .dash { color: var(--muted); }
+
+    /* ── Code block ── */
+    code {
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: rgba(19, 34, 53, 0.06);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      margin: 16px 0;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: #1a2332;
+      color: #dde4ee;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    pre .comment { color: #6b7d93; }
+    pre .keyword { color: #82aaff; }
+    pre .string { color: #c3e88d; }
+    pre .type { color: #ffcb6b; }
+    pre .number { color: #f78c6c; }
+    pre .function { color: #89ddff; }
+
+    /* ── Dual-path diagram ── */
+    .dual-path {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .path-card {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+    }
+
+    .path-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .path-card .path-steps {
+      display: grid;
+      gap: 8px;
+    }
+
+    .path-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .path-step .step-num {
+      display: inline-flex;
+      min-width: 24px;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--blue);
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .path-step.alt .step-num {
+      background: var(--green);
+    }
+
+    .path-step p {
+      margin: 0;
+      font-size: 0.93rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    /* ── Worked example ── */
+    .example-panel {
+      border: 2px solid rgba(11, 95, 255, 0.2);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin: 18px 0;
+      background: linear-gradient(135deg, rgba(11, 95, 255, 0.03), rgba(21, 127, 82, 0.03));
+    }
+
+    .example-panel h4 {
+      margin: 0 0 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .output-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 12px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .output-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(19, 34, 53, 0.04);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .output-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .output-table tr:last-child td { border-bottom: none; }
+
+    .severity-bad { color: var(--red); font-weight: 700; }
+    .severity-ok { color: var(--green); font-weight: 700; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 32px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 18px 14px 40px; }
+      .hero, .section { padding: 24px 20px; }
+      .row { grid-template-columns: 1fr; }
+      .dual-path { grid-template-columns: 1fr; }
+      .cmp-table { font-size: 0.85rem; }
+      .cmp-table th, .cmp-table td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ════════════════════════════════════════════════════
+         HERO
+         ════════════════════════════════════════════════════ -->
+    <header class="hero">
+      <div class="eyebrow">White Paper &bull; AMD GPU Tooling</div>
+      <h1>Omniprobe</h1>
+      <p class="subtitle">Source-level GPU memory access analysis for HIP and Triton kernels. Omniprobe fills the gap between hardware-counter profilers and the per-instruction, per-source-location insight developers need to diagnose uncoalesced accesses, LDS bank conflicts, and memory inefficiencies in AMD GPU workloads.</p>
+      <div class="hero-meta">
+        <div class="metric">
+          <span class="label">Core Capability</span>
+          <div class="value">Per-instruction memory access pattern analysis mapped to source code locations.</div>
+        </div>
+        <div class="metric">
+          <span class="label">Instrumentation</span>
+          <div class="value">Compile-time LLVM IR passes that clone kernels and insert lightweight message probes. Zero overhead on non-instrumented paths.</div>
+        </div>
+        <div class="metric">
+          <span class="label">Supported Frontends</span>
+          <div class="value">HIP (pre-compiled) and Triton (JIT-integrated). Both produce the same analysis output.</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════
+         LAYOUT: TOC + CONTENT
+         ════════════════════════════════════════════════════ -->
+    <div class="layout">
+      <nav class="toc">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#problem">The Analysis Gap</a></li>
+          <li><a href="#architecture">System Architecture</a></li>
+          <li><a href="#instrumentation">Compile-Time Instrumentation</a></li>
+          <li><a href="#interception">Runtime Dispatch Interception</a></li>
+          <li><a href="#messaging">Device-Host Communication</a></li>
+          <li><a href="#analysis">Memory Analysis Engine</a></li>
+          <li><a href="#workflows">HIP &amp; Triton Workflows</a></li>
+          <li><a href="#worked-example">Worked Example</a></li>
+          <li><a href="#comparison">Capabilities Comparison</a></li>
+          <li><a href="#use-cases">Use Cases</a></li>
+          <li><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#roadmap">Roadmap</a></li>
+        </ol>
+      </nav>
+
+      <main class="content">
+
+        <!-- ── 1. Executive Summary ── -->
+        <section class="section" id="executive-summary">
+          <h2>Executive Summary</h2>
+          <p>Modern GPU applications are increasingly limited not by compute throughput but by memory access efficiency. An AMD CDNA GPU can deliver teraflops of peak compute, yet a single kernel with uncoalesced global memory accesses or LDS bank conflicts can leave the majority of that bandwidth unutilized. Existing profiling tools report hardware performance counters and roofline metrics, but they do not tell the developer <em>which source line</em> caused the inefficiency or <em>which specific lanes</em> in a wavefront accessed conflicting memory banks.</p>
+          <p>Omniprobe bridges this gap. It instruments GPU kernels at compile time using LLVM IR passes, intercepts kernel dispatches transparently at runtime via the HSA API, streams per-instruction memory access data from device to host in real time, and reports findings grouped by source file, line, and column. The developer sees exactly which memory operations are inefficient, what the hardware actually did, and what the fix should look like.</p>
+          <p>Omniprobe supports both HIP and Triton frontends, works with production libraries such as rocBLAS and hipBLASLt, and requires no modifications to application source code. Instrumentation creates isolated kernel clones, so non-instrumented execution paths carry zero runtime overhead.</p>
+          <div class="note">Omniprobe does not replace hardware-counter profilers. It complements them by providing the source-level memory access detail they were not designed to capture.</div>
+        </section>
+
+        <!-- ── 2. The Analysis Gap ── -->
+        <section class="section" id="problem">
+          <h2>The Analysis Gap</h2>
+          <p>AMD GPU developers today have access to powerful profiling tools. <strong>rocprofv3</strong> provides kernel-level hardware counter data and traces. <strong>Omniperf</strong> offers roofline analysis, occupancy metrics, and memory hierarchy statistics. <strong>Omnitrace</strong> captures timeline traces for multi-threaded CPU+GPU workflows. These tools answer critical questions about overall kernel performance, resource utilization, and system-level bottlenecks.</p>
+          <p>But there is a class of performance problems these tools cannot diagnose precisely:</p>
+          <div class="card-grid">
+            <div class="card">
+              <h4>Uncoalesced Accesses</h4>
+              <p>When 64 lanes in a wavefront access scattered global memory addresses, the hardware issues multiple cache line fetches instead of one. Counter-based tools report high L2 traffic, but cannot pinpoint which load instruction is the culprit or which lanes diverge.</p>
+            </div>
+            <div class="card">
+              <h4>LDS Bank Conflicts</h4>
+              <p>When multiple lanes access the same LDS bank simultaneously, accesses serialize. Hardware counters report aggregate LDS stalls, but cannot show which shared memory access pattern causes the conflict or for which specific wavefront shape.</p>
+            </div>
+            <div class="card">
+              <h4>Source-Level Attribution</h4>
+              <p>Counter-based tools operate at the kernel level or, at best, the ISA instruction level. Mapping a problematic ISA instruction back to the exact source line, especially after compiler optimizations, requires manual effort and ISA expertise.</p>
+            </div>
+          </div>
+          <p>Omniprobe fills this gap by operating at the <em>per-instruction, per-wavefront</em> granularity and mapping every finding back to a source file and line number via DWARF debug information. The developer does not need to read ISA or interpret counter ratios. The output directly says: <em>"line 42 of kernel.hip: 64 lanes touched 16 cache lines instead of the minimum 2 &mdash; 8x memory bandwidth waste."</em></p>
+        </section>
+
+        <!-- ── 3. System Architecture ── -->
+        <section class="section" id="architecture">
+          <h2>System Architecture</h2>
+          <p>Omniprobe operates across the full lifecycle of a GPU kernel, from compilation to execution to post-dispatch reporting. The architecture has six stages, each handled by a dedicated subsystem.</p>
+
+          <div class="diagram">
+            <span class="diagram-label">End-to-end data flow</span>
+            <div class="flow-line">
+              <div class="node">LLVM IR Pass<small>Clone + Instrument</small></div>
+              <div class="arrow">&rarr;</div>
+              <div class="node alt">HSA Interceptor<small>Dispatch Swap</small></div>
+              <div class="arrow">&rarr;</div>
+              <div class="node warn">GPU Execution<small>Message Streaming</small></div>
+              <div class="arrow">&rarr;</div>
+              <div class="node alt">dh_comms<small>Host Polling</small></div>
+              <div class="arrow">&rarr;</div>
+              <div class="node">Analysis Handler<small>Aggregation</small></div>
+              <div class="arrow">&rarr;</div>
+              <div class="node red">Report<small>Source-Level Output</small></div>
+            </div>
+          </div>
+
+          <div class="sequence">
+            <div class="step">
+              <div class="num">1</div>
+              <strong>Build Time</strong>
+              <span>LLVM IR pass plugins clone each kernel and insert <code>v_submit_message()</code> calls into the clones. The original kernel is always preserved unmodified.</span>
+            </div>
+            <div class="step">
+              <div class="num">2</div>
+              <strong>Runtime Launch</strong>
+              <span>The <code>omniprobe</code> CLI sets <code>LD_PRELOAD</code> to load the interceptor library, which registers itself as a rocprofiler-sdk tool.</span>
+            </div>
+            <div class="step">
+              <div class="num">3</div>
+              <strong>Dispatch Interception</strong>
+              <span>The HSA interceptor captures dispatch packets and transparently swaps the original kernel for its instrumented clone. Kernel arguments are extended with a device-host communication descriptor.</span>
+            </div>
+            <div class="step">
+              <div class="num">4</div>
+              <strong>Kernel Execution</strong>
+              <span>The instrumented kernel streams per-instruction messages (addresses + DWARF source locations) to a shared GPU-host buffer during execution.</span>
+            </div>
+            <div class="step">
+              <div class="num">5</div>
+              <strong>Host Polling</strong>
+              <span>A <code>dh_comms</code> polling thread receives messages in real time and routes them to registered analysis handlers.</span>
+            </div>
+            <div class="step">
+              <div class="num">6</div>
+              <strong>Reporting</strong>
+              <span>After kernel completion, handlers aggregate findings and report them grouped by source file, line, and column. Output formats: console, CSV, or JSON.</span>
+            </div>
+          </div>
+
+          <h3>Architectural Invariants</h3>
+          <div class="table-like">
+            <div class="row">
+              <div class="term">Zero-overhead design</div>
+              <div class="desc">Original kernels are never modified. Instrumentation creates clones with an <code>_inst</code> suffix. Non-instrumented execution paths carry no runtime overhead whatsoever.</div>
+            </div>
+            <div class="row">
+              <div class="term">Transparent interception</div>
+              <div class="desc">The application under analysis requires no source code changes. The interceptor hooks HSA API calls and swaps kernels at the dispatch level.</div>
+            </div>
+            <div class="row">
+              <div class="term">Non-blocking analysis</div>
+              <div class="desc">Message handlers run on separate host threads and never block GPU dispatch. The GPU does not wait for the host to process messages.</div>
+            </div>
+            <div class="row">
+              <div class="term">ISA-level accuracy</div>
+              <div class="desc">The kernel database correlates IR-level DWARF debug info with actual ISA instructions, correcting for compiler optimizations that change access sizes (e.g., a 4-byte IR load compiled to a 16-byte <code>buffer_load_dwordx4</code>).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── 4. Compile-Time Instrumentation ── -->
+        <section class="section" id="instrumentation">
+          <h2>Compile-Time Instrumentation</h2>
+          <p>Omniprobe's instrumentation subsystem consists of LLVM IR pass plugins that are loaded by the compiler during kernel compilation. Each plugin implements the <em>clone-and-instrument</em> pattern: it creates a copy of every kernel function, appends <code>_inst</code> to the clone's name, adds a <code>void* dh_comms_descriptor</code> as the final argument, and inserts instrumentation calls at selected instructions.</p>
+
+          <h3>Available Plugins</h3>
+          <div class="card-grid">
+            <div class="card">
+              <h4>Address Messages</h4>
+              <p>Instruments load and store instructions. Inserts <code>v_submit_address()</code> calls that capture the 64-lane address vector and DWARF source location. Used by the Memory Analysis, Address Logger, and Heatmap analyzers.</p>
+            </div>
+            <div class="card">
+              <h4>Basic Block Start</h4>
+              <p>Instruments basic block entries. Inserts <code>s_submit_wave_header()</code> calls that record wavefront entry into each basic block. Used by the Basic Block Logger and Analysis handlers.</p>
+            </div>
+            <div class="card">
+              <h4>Basic Block Interval</h4>
+              <p>Instruments basic block timing by inserting <code>s_submit_time_interval()</code> calls at basic block boundaries. Captures execution time per block for profiling.</p>
+            </div>
+          </div>
+
+          <h3>Scope Control</h3>
+          <p>Instrumentation can be restricted to specific source files and line ranges at compile time using the <code>INSTRUMENTATION_SCOPE</code> environment variable. The syntax <code>file.hip:10:50</code> limits instrumentation to lines 10&ndash;50 of that file. Multiple ranges can be combined with commas and semicolons. This is particularly valuable when analyzing large kernels where only a specific code region is of interest, as it reduces message volume and analysis overhead.</p>
+
+          <h3>Dual LLVM Variant Compilation</h3>
+          <p>Because instrumentation plugins are loaded directly into the compiler, they must match the LLVM version of the host compiler. ROCm and Triton use different LLVM builds, so each plugin is compiled twice: once against the ROCm LLVM and once against the Triton LLVM. The build system handles this automatically.</p>
+        </section>
+
+        <!-- ── 5. Runtime Dispatch Interception ── -->
+        <section class="section" id="interception">
+          <h2>Runtime Dispatch Interception</h2>
+          <p>At runtime, the Omniprobe interceptor operates as an HSA tools library registered through rocprofiler-sdk. It hooks three critical HSA API functions to achieve transparent kernel swapping without any application modifications.</p>
+
+          <div class="table-like">
+            <div class="row">
+              <div class="term"><code>hsa_queue_create</code></div>
+              <div class="desc">Registers queues and HSA agents so the interceptor can track which GPU will execute each dispatch.</div>
+            </div>
+            <div class="row">
+              <div class="term"><code>hsa_executable_symbol_get_info</code></div>
+              <div class="desc">Captures kernel object handles into an internal map and registers them in the kernel cache. This is where Omniprobe discovers which kernels are available and whether instrumented variants exist.</div>
+            </div>
+            <div class="row">
+              <div class="term"><code>OnSubmitPackets</code></div>
+              <div class="desc">Intercepts dispatch packets before they reach the GPU. The <code>doPackets()</code> function decides whether to swap in the instrumented kernel variant. If swapped, <code>fixupKernArgs()</code> appends the <code>dh_comms_descriptor</code> pointer as the final kernel argument.</div>
+            </div>
+          </div>
+
+          <h3>On-Demand Lazy Scanning</h3>
+          <p>Production GPU libraries like rocBLAS contain over 12,000 kernel symbols. Eagerly scanning all code objects at startup caused delays exceeding 10 minutes. Omniprobe's solution is <em>on-demand scanning</em>: at dispatch time, if the kernel is not yet in the kernel database, <code>scanCodeObject()</code> is called for that specific code object. Startup is near-instantaneous regardless of library size.</p>
+          <div class="note green">The on-demand design means Omniprobe adds negligible startup latency even when analyzing applications that link against dozens of GPU libraries with thousands of kernel symbols.</div>
+
+          <h3>Library Filtering</h3>
+          <p>The interceptor includes a configurable library filter that controls which GPU libraries are scanned and intercepted. Libraries can be included or excluded by path using a JSON configuration file. This allows developers to focus analysis on specific libraries (e.g., only hipBLASLt) while ignoring others.</p>
+        </section>
+
+        <!-- ── 6. Device-Host Communication ── -->
+        <section class="section" id="messaging">
+          <h2>Device-Host Communication</h2>
+          <p>The <code>dh_comms</code> subsystem provides the shared-buffer infrastructure that enables instrumented kernels to stream analysis data to the host during execution. Unlike post-mortem profiling approaches, data flows from GPU to host in real time while the kernel is still running.</p>
+
+          <div class="card-grid">
+            <div class="card">
+              <h4>dh_comms Descriptor</h4>
+              <p>A struct passed to the instrumented kernel as its extra argument. Contains pointers to shared sub-buffers that the kernel writes to and the host reads from.</p>
+            </div>
+            <div class="card">
+              <h4>Message Format</h4>
+              <p>Each <code>message_t</code> contains an array of 64 addresses (one per wavefront lane), an address-space identifier (FLAT, GLOBAL, SHARED, CONSTANT), and DWARF source location information (file, line, column).</p>
+            </div>
+            <div class="card">
+              <h4>Pool Management</h4>
+              <p>The <code>comms_mgr</code> pools <code>dh_comms</code> objects with checkout/checkin semantics. One pool per HSA agent. Pools grow on demand. Thread-safe access via mutex.</p>
+            </div>
+          </div>
+
+          <p>Handler plugins are attached to <code>dh_comms</code> objects at checkout time. When the kernel completes and the object is checked back in, the polling thread stops, handlers produce their reports, and the object is cleaned up. This per-dispatch lifecycle ensures that handler state is isolated between kernel invocations.</p>
+        </section>
+
+        <!-- ── 7. Memory Analysis Engine ── -->
+        <section class="section" id="analysis">
+          <h2>Memory Analysis Engine</h2>
+          <p>The memory analysis handler is the flagship analysis component. It processes the stream of 64-lane address messages and detects two categories of performance problems.</p>
+
+          <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="card" style="border-left: 4px solid var(--red);">
+              <h4>Uncoalesced Global Accesses</h4>
+              <p>For each global memory instruction, the handler counts the distinct cache lines touched by all 64 lanes in the wavefront. It compares this against the theoretical minimum (the number of cache lines needed if all lanes accessed contiguous addresses). The ratio indicates memory bandwidth efficiency: a ratio of 1.0 is perfectly coalesced, while 16.0 means 16x bandwidth waste.</p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--gold);">
+              <h4>LDS Bank Conflicts</h4>
+              <p>For shared memory (LDS) accesses, the handler partitions the 64 lanes into conflict sets based on bank mapping and access size, then detects when multiple lanes within a set target the same bank. Bank conflicts cause serialized access, degrading LDS throughput.</p>
+            </div>
+          </div>
+
+          <h3>Architecture-Aware Cache Line Sizes</h3>
+          <p>Cache line analysis is parameterized by GPU architecture. The handler uses the correct L2 cache line size for the target GPU:</p>
+          <div class="pill-row">
+            <div class="pill">gfx906 / gfx908: 64-byte lines</div>
+            <div class="pill">gfx90a / gfx940 / gfx941 / gfx942: 128-byte lines</div>
+          </div>
+
+          <h3>ISA-Level Correction</h3>
+          <p>A critical accuracy feature. The compiler may optimize IR-level memory accesses: a 4-byte load in source code might become a 16-byte <code>buffer_load_dwordx4</code> in the generated ISA. The memory analysis handler uses the <em>kernel database</em> to correlate IR-level DWARF information with actual ISA instructions, ensuring that cache line and bank conflict calculations use the true hardware access size rather than the IR-level approximation.</p>
+          <div class="note gold">Without ISA-level correction, analysis results could be misleading. A seemingly uncoalesced 4-byte access might actually be a perfectly coalesced 16-byte vectorized load. Omniprobe's kernel database integration eliminates this class of false positives.</div>
+
+          <h3>Pluggable Handler Architecture</h3>
+          <p>The memory analysis handler is one of several analysis plugins. Handlers are loaded via <code>dlopen()</code> with a C factory interface (<code>getMessageHandlers()</code>). New analyzers can be added as shared libraries without modifying the Omniprobe core. Built-in handlers include:</p>
+          <div class="table-like">
+            <div class="row">
+              <div class="term">Memory Analysis</div>
+              <div class="desc">Detects uncoalesced accesses and LDS bank conflicts. Reports efficiency ratios per source location.</div>
+            </div>
+            <div class="row">
+              <div class="term">Message Logger</div>
+              <div class="desc">Raw trace output of all address messages. Useful for custom post-processing.</div>
+            </div>
+            <div class="row">
+              <div class="term">Basic Block Analysis</div>
+              <div class="desc">Counts basic block entries per wavefront. Useful for control-flow divergence analysis.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── 8. HIP & Triton Workflows ── -->
+        <section class="section" id="workflows">
+          <h2>HIP &amp; Triton Workflows</h2>
+          <p>Omniprobe supports two GPU programming frontends, each with a tailored workflow that converges to the same analysis output.</p>
+
+          <div class="dual-path">
+            <div class="path-card" style="border-top: 4px solid var(--blue);">
+              <h4>HIP Workflow</h4>
+              <div class="path-steps">
+                <div class="path-step">
+                  <div class="step-num">1</div>
+                  <p>Compile kernels with the instrumentation pass plugin: <code>hipcc -fpass-plugin=AMDGCNSubmitAddressMessages.so -g ...</code></p>
+                </div>
+                <div class="path-step">
+                  <div class="step-num">2</div>
+                  <p>The compiler produces both original and instrumented (<code>_inst</code>) kernel variants in the same binary.</p>
+                </div>
+                <div class="path-step">
+                  <div class="step-num">3</div>
+                  <p>Run the application through <code>omniprobe -i -a MemoryAnalysis ./app</code>. The interceptor swaps to instrumented variants at dispatch time.</p>
+                </div>
+                <div class="path-step">
+                  <div class="step-num">4</div>
+                  <p>Analysis results are printed to console, grouped by source location.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="path-card" style="border-top: 4px solid var(--green);">
+              <h4>Triton Workflow</h4>
+              <div class="path-steps">
+                <div class="path-step alt">
+                  <div class="step-num">1</div>
+                  <p>No pre-compilation needed. Run the Triton script through <code>omniprobe -i -a MemoryAnalysis -c /path/to/triton/cache script.py</code></p>
+                </div>
+                <div class="path-step alt">
+                  <div class="step-num">2</div>
+                  <p>Omniprobe sets <code>LLVM_PASS_PLUGIN_PATH</code> so Triton's JIT compiler loads the instrumentation plugin automatically during compilation.</p>
+                </div>
+                <div class="path-step alt">
+                  <div class="step-num">3</div>
+                  <p>The JIT-compiled kernels include both original and instrumented variants. The interceptor swaps at dispatch time, just like HIP.</p>
+                </div>
+                <div class="path-step alt">
+                  <div class="step-num">4</div>
+                  <p>Same analysis output as HIP. Zero manual instrumentation steps.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note">The Triton workflow is particularly powerful for AI/ML workloads. Developers can analyze Triton kernels generated from high-level Python code without any knowledge of LLVM IR, ISA, or manual compilation flags. Simply point <code>omniprobe</code> at the Triton script and cache directory.</div>
+        </section>
+
+        <!-- ── 9. Worked Example ── -->
+        <section class="section" id="worked-example">
+          <h2>Worked Example: Diagnosing Uncoalesced Memory Accesses</h2>
+          <p>This example demonstrates Omniprobe's end-to-end workflow on a HIP kernel with a common memory access anti-pattern: column-major traversal of a row-major matrix.</p>
+
+          <div class="example-panel">
+            <h4>Step 1 &mdash; The Problem Kernel</h4>
+            <p style="color: var(--muted); font-size: 0.93rem; margin-bottom: 12px;">A kernel that reads a matrix column-by-column, causing each wavefront's lanes to stride across cache lines.</p>
+<pre><span class="keyword">__global__</span> <span class="type">void</span> <span class="function">column_sum</span>(<span class="type">const float</span>* matrix,
+                          <span class="type">float</span>* result,
+                          <span class="type">int</span> rows, <span class="type">int</span> cols) {
+    <span class="type">int</span> col = blockIdx.x * blockDim.x + threadIdx.x;
+    <span class="keyword">if</span> (col &lt; cols) {
+        <span class="type">float</span> sum = <span class="number">0.0f</span>;
+        <span class="keyword">for</span> (<span class="type">int</span> row = <span class="number">0</span>; row &lt; rows; row++) {
+            sum += matrix[row * cols + col];  <span class="comment">// line 9: strided access</span>
+        }
+        result[col] = sum;
+    }
+}</pre>
+            <p style="color: var(--muted); font-size: 0.93rem;">Adjacent threads (lanes) access addresses that are <code>cols</code> elements apart. On a 1024-column matrix with 128-byte cache lines, each wavefront of 64 lanes touches up to 64 separate cache lines instead of the minimum 2.</p>
+          </div>
+
+          <div class="example-panel">
+            <h4>Step 2 &mdash; Compile and Run with Omniprobe</h4>
+<pre><span class="comment"># Compile with instrumentation and debug info</span>
+hipcc -fpass-plugin=AMDGCNSubmitAddressMessages.so -g \
+      column_sum.hip -o column_sum
+
+<span class="comment"># Run through Omniprobe</span>
+omniprobe -i -a MemoryAnalysis ./column_sum</pre>
+          </div>
+
+          <div class="example-panel">
+            <h4>Step 3 &mdash; Omniprobe Output</h4>
+            <p style="color: var(--muted); font-size: 0.93rem; margin-bottom: 12px;">The memory analysis handler reports per-source-location efficiency metrics:</p>
+            <table class="output-table">
+              <thead>
+                <tr>
+                  <th>Source Location</th>
+                  <th>Access Type</th>
+                  <th>Cache Lines Touched</th>
+                  <th>Minimum Possible</th>
+                  <th>Ratio</th>
+                  <th>Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>column_sum.hip:9</td>
+                  <td>GLOBAL load</td>
+                  <td>64</td>
+                  <td>2</td>
+                  <td><span class="severity-bad">32.0x</span></td>
+                  <td><span class="severity-bad">Uncoalesced</span></td>
+                </tr>
+                <tr>
+                  <td>column_sum.hip:11</td>
+                  <td>GLOBAL store</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td><span class="severity-ok">1.0x</span></td>
+                  <td><span class="severity-ok">Coalesced</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="color: var(--muted); font-size: 0.93rem; margin-top: 12px;">Line 9 has a 32x memory bandwidth inefficiency. Line 11 (the store to <code>result[]</code>) is perfectly coalesced. The developer immediately knows where to focus optimization effort.</p>
+          </div>
+
+          <div class="example-panel">
+            <h4>Step 4 &mdash; The Fix</h4>
+            <p style="color: var(--muted); font-size: 0.93rem; margin-bottom: 12px;">Transpose the access pattern so adjacent lanes read adjacent elements:</p>
+<pre><span class="keyword">__global__</span> <span class="type">void</span> <span class="function">column_sum_fixed</span>(<span class="type">const float</span>* matrix,
+                                <span class="type">float</span>* result,
+                                <span class="type">int</span> rows, <span class="type">int</span> cols) {
+    <span class="type">int</span> col = blockIdx.x * blockDim.x + threadIdx.x;
+    <span class="keyword">if</span> (col &lt; cols) {
+        <span class="type">float</span> sum = <span class="number">0.0f</span>;
+        <span class="keyword">for</span> (<span class="type">int</span> row = <span class="number">0</span>; row &lt; rows; row++) {
+            sum += matrix[col * rows + row];  <span class="comment">// transposed: coalesced</span>
+        }
+        result[col] = sum;
+    }
+}</pre>
+            <p style="color: var(--muted); font-size: 0.93rem;">Re-running Omniprobe confirms the fix:</p>
+            <table class="output-table">
+              <thead>
+                <tr>
+                  <th>Source Location</th>
+                  <th>Access Type</th>
+                  <th>Cache Lines Touched</th>
+                  <th>Minimum Possible</th>
+                  <th>Ratio</th>
+                  <th>Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>column_sum.hip:9</td>
+                  <td>GLOBAL load</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td><span class="severity-ok">1.0x</span></td>
+                  <td><span class="severity-ok">Coalesced</span></td>
+                </tr>
+                <tr>
+                  <td>column_sum.hip:11</td>
+                  <td>GLOBAL store</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td><span class="severity-ok">1.0x</span></td>
+                  <td><span class="severity-ok">Coalesced</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ── 10. Capabilities Comparison ── -->
+        <section class="section" id="comparison">
+          <h2>Capabilities Comparison</h2>
+          <p>The following comparison shows how Omniprobe complements the existing AMD GPU profiling ecosystem. Each tool excels in a different dimension of performance analysis.</p>
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>rocprofv3</th>
+                <th>Omniperf</th>
+                <th>Omnitrace</th>
+                <th>Omniprobe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hardware performance counters</td>
+                <td class="check">Yes</td>
+                <td class="check">Yes</td>
+                <td class="check">Yes</td>
+                <td class="dash">&mdash;</td>
+              </tr>
+              <tr>
+                <td>Roofline analysis</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Yes</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+              </tr>
+              <tr>
+                <td>CPU+GPU timeline traces</td>
+                <td class="check">Yes</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Yes</td>
+                <td class="dash">&mdash;</td>
+              </tr>
+              <tr>
+                <td>Per-instruction memory access patterns</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Yes</td>
+              </tr>
+              <tr>
+                <td>Per-wavefront lane-level analysis</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Yes</td>
+              </tr>
+              <tr>
+                <td>Source-line attribution</td>
+                <td>ISA-level</td>
+                <td>Kernel-level</td>
+                <td>Kernel-level</td>
+                <td class="check">Source line + column</td>
+              </tr>
+              <tr>
+                <td>Uncoalesced access detection</td>
+                <td class="dash">Inferred from counters</td>
+                <td class="dash">Inferred from counters</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Direct, per-instruction</td>
+              </tr>
+              <tr>
+                <td>LDS bank conflict detection</td>
+                <td class="dash">Aggregate counter</td>
+                <td class="dash">Aggregate counter</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Per-instruction, per-bank</td>
+              </tr>
+              <tr>
+                <td>Triton JIT integration</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="dash">&mdash;</td>
+                <td class="check">Automatic via LLVM plugin</td>
+              </tr>
+              <tr>
+                <td>No source changes required</td>
+                <td class="check">Yes</td>
+                <td class="check">Yes</td>
+                <td class="check">Yes</td>
+                <td class="check">Yes</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="note">These tools are complementary, not competing. A typical optimization workflow might use Omniperf to identify a kernel with poor memory utilization, then use Omniprobe to pinpoint exactly which source lines cause the inefficiency. rocprofv3 and Omnitrace provide the system-level and timeline context.</div>
+        </section>
+
+        <!-- ── 11. Use Cases ── -->
+        <section class="section" id="use-cases">
+          <h2>Use Cases</h2>
+          <div class="card-grid">
+            <div class="card">
+              <h4>HIP Kernel Optimization</h4>
+              <p>A performance engineer suspects a HIP kernel is memory-bound but counter-based tools only show high L2 traffic. Omniprobe identifies the exact load instruction accessing scattered addresses, quantifies the cache-line waste, and attributes it to a source line. The fix is targeted and immediately verifiable.</p>
+            </div>
+            <div class="card">
+              <h4>Triton Kernel Tuning</h4>
+              <p>A machine learning engineer writes a Triton attention kernel in Python. Omniprobe integrates with Triton's JIT compiler, instruments the generated GPU code automatically, and reports which memory access patterns in the generated code are inefficient &mdash; all without the developer needing to read LLVM IR or ISA.</p>
+            </div>
+            <div class="card">
+              <h4>Library-Level Analysis</h4>
+              <p>A team needs to validate memory access efficiency across an entire GPU math library (e.g., rocBLAS, hipBLASLt). Omniprobe's library filter selects specific libraries for analysis while ignoring the rest. On-demand scanning keeps startup fast even with 12,000+ kernel symbols.</p>
+            </div>
+            <div class="card">
+              <h4>LDS Optimization</h4>
+              <p>A kernel uses shared memory (LDS) for data reuse, but performance is worse than expected. Omniprobe's bank conflict analysis reveals that the access pattern causes 4-way bank conflicts on every shared memory read. The developer adjusts the padding to eliminate conflicts.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── 12. Getting Started ── -->
+        <section class="section" id="getting-started">
+          <h2>Getting Started</h2>
+
+          <h3>Prerequisites</h3>
+          <div class="pill-row">
+            <div class="pill blue">ROCm 7.x</div>
+            <div class="pill blue">AMD CDNA GPU</div>
+            <div class="pill blue">CMake 3.21+</div>
+            <div class="pill green">Triton 3.x (optional)</div>
+          </div>
+
+          <h3>Build</h3>
+<pre><span class="comment"># Clone with submodules</span>
+git clone --recursive https://github.com/your-org/omniprobe.git
+<span class="keyword">cd</span> omniprobe
+
+<span class="comment"># Configure</span>
+cmake -B build \
+  -DROCM_PATH=/opt/rocm \
+  -DCMAKE_HIP_ARCHITECTURES=gfx90a \
+  -DCMAKE_INSTALL_PREFIX=$PWD/install
+
+<span class="comment"># Build and install</span>
+cmake --build build --parallel
+cmake --install build</pre>
+
+          <h3>Quick Start: HIP</h3>
+<pre><span class="comment"># Compile your kernel with instrumentation</span>
+hipcc -fpass-plugin=$(omniprobe --plugin-path AddressMessages) \
+      -g my_kernel.hip -o my_app
+
+<span class="comment"># Analyze</span>
+omniprobe -i -a MemoryAnalysis ./my_app</pre>
+
+          <h3>Quick Start: Triton</h3>
+<pre><span class="comment"># No pre-compilation needed</span>
+omniprobe -i -a MemoryAnalysis \
+          -c ~/.triton/cache \
+          python my_triton_script.py</pre>
+
+          <h3>Output Formats</h3>
+          <div class="table-like">
+            <div class="row">
+              <div class="term">Console (default)</div>
+              <div class="desc">Human-readable per-source-location report printed to stdout. Best for interactive debugging.</div>
+            </div>
+            <div class="row">
+              <div class="term">CSV (<code>-f csv</code>)</div>
+              <div class="desc">Machine-readable comma-separated output. Best for spreadsheet analysis and data pipelines.</div>
+            </div>
+            <div class="row">
+              <div class="term">JSON (<code>-f json</code>)</div>
+              <div class="desc">Structured JSON output. Best for automated tooling, CI integration, and programmatic post-processing.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── 13. Roadmap ── -->
+        <section class="section" id="roadmap">
+          <h2>Roadmap</h2>
+          <p>Omniprobe v1.0 establishes the foundation for source-level GPU memory analysis. The following capabilities are planned for future releases:</p>
+
+          <div class="sequence">
+            <div class="step">
+              <div class="num">1</div>
+              <strong>v1.0 Release</strong>
+              <span>Stable release with full HIP and Triton support, memory analysis and basic block handlers, library filtering, and scope control. All APIs stabilized.</span>
+            </div>
+            <div class="step">
+              <div class="num">2</div>
+              <strong>Agent-First JSON Output</strong>
+              <span>Structured JSON output for all handlers, designed for consumption by AI coding agents and automated optimization tools. Every handler emits machine-readable analysis results.</span>
+            </div>
+            <div class="step">
+              <div class="num">3</div>
+              <strong>MCP Integration Layer</strong>
+              <span>Model Context Protocol (MCP) server enabling AI tools (Claude, Copilot, etc.) to invoke Omniprobe analysis directly. Run memory analysis from your IDE's AI assistant.</span>
+            </div>
+            <div class="step">
+              <div class="num">4</div>
+              <strong>LDS Race Detection</strong>
+              <span>New analysis handler that detects data races in LDS (shared memory) by tracking read/write sets across wavefronts within a workgroup. Catches synchronization bugs that hardware counters cannot see.</span>
+            </div>
+            <div class="step">
+              <div class="num">5</div>
+              <strong>Binary Instrumentation</strong>
+              <span>Instrument pre-compiled GPU binaries without access to source code or recompilation. Enables analysis of closed-source GPU libraries and vendor-provided kernels.</span>
+            </div>
+          </div>
+
+          <div class="note green">The MCP integration layer will make Omniprobe the first GPU memory analysis tool that can be invoked directly by AI coding assistants, enabling a new workflow where the AI agent identifies the performance problem, runs Omniprobe, interprets the results, and proposes a fix &mdash; all within a single conversation.</div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         FOOTER
+         ════════════════════════════════════════════════════ -->
+    <div class="footer">
+      <strong>Omniprobe</strong> &mdash; Source-Level GPU Memory Access Analysis<br>
+      AMD GPU Tooling &bull; HIP &bull; Triton &bull; CDNA Architecture
+    </div>
+
+  </div>
+</body>
+</html>
