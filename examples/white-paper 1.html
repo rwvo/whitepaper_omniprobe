@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Distill White Paper</title>
+  <style>
+    :root {
+      --bg: #eef3f9;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: #ffffff;
+      --ink: #132235;
+      --muted: #59687a;
+      --line: rgba(19, 34, 53, 0.12);
+      --blue: #0b5fff;
+      --blue-soft: rgba(11, 95, 255, 0.10);
+      --green: #157f52;
+      --gold: #d9a441;
+      --red: #c2413a;
+      --shadow: 0 22px 56px rgba(16, 32, 51, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max: 1260px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(11, 95, 255, 0.14), transparent 28rem),
+        radial-gradient(circle at top right, rgba(21, 127, 82, 0.10), transparent 24rem),
+        linear-gradient(180deg, #f7fafd 0%, #edf3f9 100%);
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    .hero {
+      padding: 44px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background:
+        linear-gradient(135deg, rgba(11, 95, 255, 0.08), rgba(11, 95, 255, 0.02)),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(19, 34, 53, 0.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 0.92;
+      letter-spacing: -0.06em;
+      max-width: 12ch;
+    }
+
+    .subtitle {
+      max-width: 68ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 30px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .metric .label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .metric .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      padding: 24px 22px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .toc h2 {
+      margin: 0 0 14px;
+      font-size: 0.92rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .toc li {
+      margin: 7px 0;
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+    }
+
+    .section {
+      padding: 30px 30px 32px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.55rem, 2.2vw, 2.1rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .section h3 {
+      margin: 22px 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section p {
+      margin: 0 0 15px;
+      color: var(--ink);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .section p.muted,
+    .section .muted {
+      color: var(--muted);
+    }
+
+    .note {
+      padding: 18px 18px 18px 20px;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      background: var(--blue-soft);
+      color: var(--ink);
+      margin: 18px 0;
+    }
+
+    .assumption-grid,
+    .filter-grid,
+    .artifact-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top: 16px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+    }
+
+    .card h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 0.96rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 4px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(19, 34, 53, 0.04);
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .diagram {
+      margin: 20px 0 8px;
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247, 250, 253, 0.95));
+      overflow-x: auto;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .node {
+      min-width: 150px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(11, 95, 255, 0.16);
+      background: rgba(11, 95, 255, 0.07);
+      color: var(--ink);
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .node.alt {
+      background: rgba(21, 127, 82, 0.08);
+      border-color: rgba(21, 127, 82, 0.18);
+    }
+
+    .node.warn {
+      background: rgba(217, 164, 65, 0.12);
+      border-color: rgba(217, 164, 65, 0.24);
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .sequence {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .sequence .step {
+      position: relative;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sequence .step .num {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      background: var(--blue);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .sequence .step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.98rem;
+    }
+
+    .sequence .step span {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    .table-like {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 220px minmax(0, 1fr);
+      padding: 15px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+
+    .row .term {
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .row .desc {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    code {
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: rgba(19, 34, 53, 0.06);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding: 18px 14px 40px;
+      }
+
+      .hero,
+      .section {
+        padding: 24px 20px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">White Paper • Distill</div>
+      <h1>Distill</h1>
+      <p class="subtitle">A source-grounded framework for evaluating subject-matter knowledge in language models. This document describes the functionality implemented in the repository, the architectural concepts that make the evaluation pipeline work, and the assumptions that must be accepted in order to interpret its results responsibly.</p>
+      <div class="hero-meta">
+        <div class="metric">
+          <span class="label">Primary Thesis</span>
+          <div class="value">Claim-first, source-grounded evaluation is more defensible than question-first benchmarking.</div>
+        </div>
+        <div class="metric">
+          <span class="label">Evaluation Target</span>
+          <div class="value">What a model demonstrably knows about a bounded subject domain.</div>
+        </div>
+        <div class="metric">
+          <span class="label">Execution Model</span>
+          <div class="value">Corpus discovery, atlas construction, claim distillation, probing, judged adjudication, and final reporting.</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#executive-summary">Executive Summary</a></li>
+          <li><a href="#problem">The Problem Distill Solves</a></li>
+          <li><a href="#claim-first">Claim-First Evaluation</a></li>
+          <li><a href="#architecture">System Architecture</a></li>
+          <li><a href="#artifacts">Core Artifacts</a></li>
+          <li><a href="#operational-flow">Operational Flow</a></li>
+          <li><a href="#discovery">Corpus Discovery and Filtering</a></li>
+          <li><a href="#ingestion">Ingestion and Evidence Bundles</a></li>
+          <li><a href="#atlas">Atlas Construction</a></li>
+          <li><a href="#claims">Claim Distillation</a></li>
+          <li><a href="#scrubbing">Claim Scrubbing and Promotion</a></li>
+          <li><a href="#coverage">Coverage and Iteration</a></li>
+          <li><a href="#probes">Probe Design</a></li>
+          <li><a href="#correctness">Correctness Evaluation</a></li>
+          <li><a href="#judge">Judge Model</a></li>
+          <li><a href="#privacy">Privacy and Sensitivity</a></li>
+          <li><a href="#objective-reference">Objective Reference</a></li>
+          <li><a href="#reporting">Reporting</a></li>
+          <li><a href="#operations">Operational Characteristics</a></li>
+          <li><a href="#assumptions">Assumptions and Limits</a></li>
+          <li><a href="#conclusion">Conclusion</a></li>
+        </ol>
+      </nav>
+
+      <main class="content">
+        <section class="section" id="executive-summary">
+          <h2>Executive Summary</h2>
+          <p>Distill is a working framework for evaluating what a language model knows about a defined subject domain by grounding the evaluation in a curated source corpus, converting that corpus into a structured map of the domain, distilling evidence-backed claims from that map, probing models against those claims, and adjudicating the resulting answers against retrieved evidence. The implementation in this repository is designed for questions that conventional benchmarks handle poorly: not whether a model can pass a generic exam, but whether it demonstrably possesses reliable knowledge of a specific field such as chip design, compiler optimization, or another bounded technical discipline.</p>
+          <p>The system is deliberately claim-first rather than question-first. Ad hoc question banks are difficult to normalize, difficult to deduplicate, and difficult to verify consistently. Distill instead treats the domain as a set of atomic, testable, source-linked claims. Questions and prompts are derived from those claims later. This provides a more defensible evaluation reference because the core unit is not a prompt phrasing but a proposition that can be traced back to evidence, assigned to a domain concept, audited for quality, weighted by importance, and revisited as the corpus evolves.</p>
+          <p>Distill also addresses a practical problem that many model-evaluation efforts ignore: the need for transparent operational artifacts. The repository contains a concrete end-to-end pipeline for domain-pack generation, automated source discovery, ingestion into an evidence bundle, atlas construction, heuristic and LLM-assisted claim extraction, claim auditing and promotion into a canonical claim bank, probe generation, live model evaluation through OpenAI-compatible Responses APIs, evidence-grounded judged evaluation, and final consultant-style reporting in HTML, PDF, and PowerPoint formats.</p>
+          <p>That does not make the system objectively correct in an absolute sense. It does make it auditable. Distill turns a vague question such as “What does model X know about chip design?” into a chain of explicit assumptions, artifacts, transformations, and judgments that can be inspected, criticized, rerun, and improved.</p>
+        </section>
+
+        <section class="section" id="problem">
+          <h2>The Problem Distill Solves</h2>
+          <p>Evaluating subject-matter knowledge in language models is harder than it first appears. A model may produce fluent, convincing language while still being shallow, inaccurate, or unstable. A benchmark built from a small hand-authored question set can reveal some weaknesses, but it rarely provides a defensible answer to the broader question of domain mastery. Those efforts are usually narrow, unevenly distributed across subdomains, informally graded, and poorly traceable back to source evidence.</p>
+          <p>Distill attacks those problems by treating knowledge evaluation as a corpus-and-claims problem rather than only a prompting problem. The system begins with a structured definition of the domain, builds an evidence base, derives an atlas that reflects the conceptual terrain of that evidence, converts the atlas and evidence into a canonical claim bank, and then uses that claim bank as the substrate for probing and adjudication.</p>
+          <div class="note">The practical question Distill tries to answer is not “Can the model answer a handful of questions?” but “Does the model reliably support, explain, and apply a defensible body of evidence-backed domain claims?”</div>
+        </section>
+
+        <section class="section" id="claim-first">
+          <h2>The Central Design Thesis: Claim-First, Source-Grounded Evaluation</h2>
+          <p>The most important conceptual decision in Distill is that claims, not prompts, are the reference unit of knowledge. A claim is an atomic technical statement such as a definition, mechanism, constraint, tradeoff, failure mode, or misconception. Claims can be linked directly to evidence chunks, mapped to atlas nodes, deduplicated across sources, assigned importance and difficulty, and converted into multiple prompt families without changing the underlying proposition being tested.</p>
+          <p>This changes the evaluation problem materially. Distill does not try to hand-author a “complete set of questions.” Instead, it tries to build a defensible claim bank that approximates the important knowledge content of the subject domain. Prompt generation is then a downstream rendering step. This makes comprehensiveness more tractable because the system can ask whether the claim bank covers the atlas, whether the atlas covers the declared scope, and whether the corpus supports the atlas.</p>
+          <div class="pill-row">
+            <div class="pill">Atomic</div>
+            <div class="pill">Source-linkable</div>
+            <div class="pill">Deduplicable</div>
+            <div class="pill">Coverage-trackable</div>
+            <div class="pill">Prompt-agnostic</div>
+            <div class="pill">Evidence-adjudicable</div>
+          </div>
+        </section>
+
+        <section class="section" id="architecture">
+          <h2>System Architecture Overview</h2>
+          <p>At a high level, Distill transforms a subject definition into a judged knowledge profile through a sequence of reviewable artifacts. The architecture is intentionally artifact-centric. Every major stage emits machine-readable JSON and a corresponding HTML report, allowing operators to inspect intermediate outputs rather than trusting a monolithic black box.</p>
+          <div class="diagram">
+            <div class="flow-line">
+              <div class="node">Subject Brief</div>
+              <div class="arrow">→</div>
+              <div class="node">Domain Pack</div>
+              <div class="arrow">→</div>
+              <div class="node">Source Discovery</div>
+              <div class="arrow">→</div>
+              <div class="node">Source Manifest</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Evidence Bundle</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Domain Atlas</div>
+              <div class="arrow">→</div>
+              <div class="node">Claim Candidates</div>
+              <div class="arrow">→</div>
+              <div class="node">Claim Audit</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Canonical Claim Bank</div>
+              <div class="arrow">→</div>
+              <div class="node">Probe Bundle</div>
+              <div class="arrow">→</div>
+              <div class="node warn">Evaluation Run</div>
+              <div class="arrow">→</div>
+              <div class="node warn">Judged Evaluation</div>
+              <div class="arrow">→</div>
+              <div class="node">Consultant Report &amp; Deck</div>
+            </div>
+          </div>
+          <p>The architecture also reflects the reality that domain knowledge evaluation is iterative. Source discovery can be rerun. Atlas quality can be normalized. Claim candidates can be scrubbed and promoted conservatively. Coverage analysis can expose gaps and drive more corpus expansion. Distill is therefore less a single benchmark than a reproducible benchmarking workbench.</p>
+        </section>
+
+        <section class="section" id="artifacts">
+          <h2>Core Artifacts and Their Role</h2>
+          <div class="table-like">
+            <div class="row">
+              <div class="term">Domain Pack</div>
+              <div class="desc">The root contract for an assessment campaign. It defines the domain identifier, scope statement, in-scope and out-of-scope areas, seed queries, seed sources, required source types, target atlas depth, and evaluation policy.</div>
+            </div>
+            <div class="row">
+              <div class="term">Source Manifest</div>
+              <div class="desc">The selected corpus candidate set after discovery and filtering. It captures source identity, locator, source type, trust tier, and sensitivity.</div>
+            </div>
+            <div class="row">
+              <div class="term">Evidence Bundle</div>
+              <div class="desc">The ingested and normalized form of the corpus. It contains document-level records and citation-preserving text chunks, each with source lineage and sensitivity metadata.</div>
+            </div>
+            <div class="row">
+              <div class="term">Domain Atlas</div>
+              <div class="desc">An ontology-like map of the subject organized into subdomains and node types such as concepts, procedures, constraints, tradeoffs, failure modes, misconceptions, formulas, and historical facts.</div>
+            </div>
+            <div class="row">
+              <div class="term">Claim Candidates</div>
+              <div class="desc">Provisional atomic statements derived from corpus material and linked back to atlas nodes and evidence references.</div>
+            </div>
+            <div class="row">
+              <div class="term">Canonical Claim Bank</div>
+              <div class="desc">The conservative subset of audited, promoted, evidence-backed claims used as the benchmark substrate.</div>
+            </div>
+            <div class="row">
+              <div class="term">Probe Bundle</div>
+              <div class="desc">Executable prompts derived from canonical claims, currently including recall, explanation, and application families.</div>
+            </div>
+            <div class="row">
+              <div class="term">Evaluation Run</div>
+              <div class="desc">Raw model outputs plus extracted response claims and preliminary heuristic verdicts.</div>
+            </div>
+            <div class="row">
+              <div class="term">Judged Evaluation</div>
+              <div class="desc">Evidence-grounded adjudication of response claims using retrieved chunks and an authoritative judge model.</div>
+            </div>
+            <div class="row">
+              <div class="term">Report Bundle</div>
+              <div class="desc">The final presentation layer used to render HTML, PDF, and PowerPoint outputs with narrative interpretation and supporting evidence.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="operational-flow">
+          <h2>Operational Flow</h2>
+          <p>The architecture is easier to understand as an operational loop. The operator defines or generates a subject boundary, Distill builds and normalizes a corpus, constructs a domain atlas, distills claims, probes target models, and then asks an authority model to adjudicate the answers against retrieved evidence.</p>
+          <div class="diagram">
+            <div class="sequence">
+              <div class="step"><div class="num">1</div><strong>Define</strong><span>Create or generate a domain pack that states what the subject means and what should be excluded.</span></div>
+              <div class="step"><div class="num">2</div><strong>Discover</strong><span>Search, rank, and select sources that can defensibly represent the declared domain.</span></div>
+              <div class="step"><div class="num">3</div><strong>Ingest</strong><span>Normalize documents into stable, citation-preserving evidence chunks.</span></div>
+              <div class="step"><div class="num">4</div><strong>Map</strong><span>Build and refine an atlas that represents the conceptual terrain of the corpus.</span></div>
+              <div class="step"><div class="num">5</div><strong>Distill</strong><span>Extract, scrub, revise, and promote claims into a canonical benchmark substrate.</span></div>
+              <div class="step"><div class="num">6</div><strong>Probe</strong><span>Convert claims into prompts and run the target models in a closed-book evaluation mode.</span></div>
+              <div class="step"><div class="num">7</div><strong>Judge</strong><span>Retrieve evidence and ask the authority model to decide whether extracted response claims are supported.</span></div>
+              <div class="step"><div class="num">8</div><strong>Report</strong><span>Render professional artifacts that explain the knowledge profile, evidence basis, and assumptions.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="discovery">
+          <h2>Corpus Discovery and Source Filtering</h2>
+          <p>Any claim that Distill later treats as evaluative truth originates, directly or indirectly, in the corpus. The implemented source-discovery flow begins with the domain pack’s seed queries, seed sources, and required source types. Distill can then expand the query set using a configured model through an OpenAI-compatible Responses API. The expanded queries are tagged with subdomain, preferred source type, and priority. If a coverage plan is supplied, query expansion can use coverage gaps and existing-domain saturation as part of the expansion context. If model-assisted expansion fails, the system falls back to deterministic query construction rather than stopping the pipeline.</p>
+          <p>Distill then harvests public search results from multiple search backends, normalizes and deduplicates URLs, unwraps redirect links, fetches page metadata where possible, and applies heuristic ranking. The ranking logic considers lexical overlap with the domain, source-type hints, trust-tier hints, query provenance, backend corroboration, and domain quality heuristics. The implementation also contains explicit blocked-domain logic and off-topic text filters to reject irrelevant material.</p>
+          <div class="filter-grid">
+            <div class="card">
+              <h4>1. Scope Steering</h4>
+              <p>The domain pack narrows the subject boundary before any search or ranking logic runs.</p>
+            </div>
+            <div class="card">
+              <h4>2. Query Expansion</h4>
+              <p>LLM-assisted and fallback query generation broaden search coverage while preserving subdomain intent.</p>
+            </div>
+            <div class="card">
+              <h4>3. URL Harvesting</h4>
+              <p>Multiple public search backends are used to gather candidate URLs and snippets.</p>
+            </div>
+            <div class="card">
+              <h4>4. Metadata and Ranking</h4>
+              <p>Metadata harvesting, deduplication, trust-tier hints, and heuristic scoring reduce noisy or off-domain material.</p>
+            </div>
+            <div class="card">
+              <h4>5. LLM Selection</h4>
+              <p>A structured source-selection pass chooses candidates with deterministic fallbacks and caps.</p>
+            </div>
+            <div class="card">
+              <h4>6. Merge and Review</h4>
+              <p>Selected results are merged with seed and prior manifest entries into a reviewable source manifest.</p>
+            </div>
+          </div>
+          <p>This multi-stage design is central to Distill’s claim of defensibility. The system does not assume that a model can hallucinate a good bibliography and be trusted. It combines public discovery, metadata, heuristics, constraints, and human-reviewable artifacts to reduce that risk.</p>
+        </section>
+
+        <section class="section" id="ingestion">
+          <h2>Ingestion and the Evidence Bundle</h2>
+          <p>Source discovery identifies what to read. Ingestion determines what later stages are actually allowed to reason over. The implemented ingestion stage fetches web content where possible, reads local files when locators point to filesystem content, normalizes HTML and Markdown into plain text, preserves source metadata, and chunks documents into overlapping text windows. The current chunking strategy is intentionally small enough for retrieval and claim extraction, but large enough to preserve local context.</p>
+          <p>Each ingested document receives a stable <code>document_id</code>, and each chunk receives a stable <code>chunk_id</code>. Document records preserve title, locator, resolved locator, source type, trust tier, sensitivity, word count, content hash, ingest status, and operator notes. Chunk records preserve source lineage, sensitivity, ordering, word offsets, and chunk text.</p>
+          <div class="artifact-grid">
+            <div class="card">
+              <h4>Document Record</h4>
+              <p>Title, locator, resolved locator, source type, trust tier, sensitivity, ingest status, content hash, and notes.</p>
+            </div>
+            <div class="card">
+              <h4>Chunk Record</h4>
+              <p>Stable chunk identifier, source and document lineage, sensitivity, ordering, offsets, and normalized text.</p>
+            </div>
+            <div class="card">
+              <h4>Why It Matters</h4>
+              <p>Later judged evaluations can cite exact chunks rather than vaguely citing sources at document level.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="atlas">
+          <h2>Building the Domain Atlas</h2>
+          <p>Distill’s atlas is the bridge between a raw corpus and a usable evaluation reference. Without some structured representation of the subject, a large corpus remains too diffuse to measure coverage, generate balanced claims, or explain results by subdomain. The atlas-building implementation starts from the <code>in_scope</code> subdomains declared in the domain pack. Those subdomains form explicit top-level lanes.</p>
+          <p>For each subdomain, Distill identifies relevant evidence chunks through lexical similarity and uses those chunks to scaffold the atlas. It creates lane nodes for fundamentals, tradeoffs, failure modes, and misconceptions, then extracts phrase candidates from relevant sentences to propose additional nodes. These proposed nodes are typed heuristically based on technical markers. The result is a corpus-backed atlas rather than an ontology imagined only by an LLM.</p>
+          <p>The atlas can then be refined with an LLM-assisted pass that is constrained to allowed evidence chunks. A subsequent normalization pass merges duplicate or overlapping nodes, rewrites edges, induces additional structural links, and records merge reviews and redirect maps. The atlas is therefore a hybrid artifact: seeded by the domain pack, expanded from evidence, cleaned with LLM assistance, and normalized deterministically.</p>
+        </section>
+
+        <section class="section" id="claims">
+          <h2>From Atlas to Claims</h2>
+          <p>If the atlas is the map of the domain, the claim bank is the operational statement of what knowledge within that map should be testable. Distill currently supports two complementary claim-generation paths. The heuristic path extracts candidate sentences from evidence chunks, classifies them into claim types such as definition, mechanism, procedure, tradeoff, or failure mode, estimates difficulty and importance, and links them to the most relevant atlas nodes.</p>
+          <p>The LLM-assisted path asks a configured extractor model to pull atomic technical claims from a source chunk using only the provided excerpt and a bounded list of atlas topics. The extractor is constrained by a schema that requires claim text, claim type, difficulty, importance, and an atlas hint. Heuristic extraction is cheap, deterministic, and recall-oriented. LLM-assisted extraction is better at paraphrasing dense source text into cleaner canonical statements and surfacing nuanced claims that sentence heuristics might miss.</p>
+          <div class="diagram">
+            <div class="flow-line">
+              <div class="node">Evidence Chunks</div>
+              <div class="arrow">→</div>
+              <div class="node">Heuristic Extraction</div>
+              <div class="arrow">→</div>
+              <div class="node">Candidate Pool</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Claim Audit</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Canonical Claim Bank</div>
+            </div>
+            <div class="flow-line" style="margin-top:12px">
+              <div class="node warn">Atlas Nodes</div>
+              <div class="arrow">→</div>
+              <div class="node warn">LLM Claim Extraction</div>
+              <div class="arrow">→</div>
+              <div class="node warn">Revision / Reject / Accept</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="scrubbing">
+          <h2>Claim Quality Scrubbing and Promotion</h2>
+          <p>Claim extraction must over-generate, but evaluation cannot tolerate semantic garbage. Distill therefore includes an explicit claim-quality subsystem rather than assuming every extracted sentence is a valid evaluative claim. The deterministic quality layer rejects placeholders, malformed fragments, prompt echoes, schema leakage, conversational filler, meta-discourse, and heading-like text. This is the mechanism that filters out junk such as <code>"string"</code> or prompt residue like <code>Return only a JSON object with exact shape...</code>, both of which are common failure modes when LLMs are used inside extraction pipelines.</p>
+          <p>After deterministic screening, Distill can run an LLM-assisted audit pass. The auditor receives the cleaned candidate text, source excerpt, linked atlas labels, and heuristic scores. It must return a structured verdict of <code>accept</code>, <code>revise</code>, or <code>reject</code>, together with quality scores, failure reasons, a suggested rewrite when appropriate, and rationale. Distill then reconciles heuristic and model scores, applies additional rewrite-salvage logic, blocks rewrites for off-domain or unsupported claims, and only promotes revisions that remain source-grounded and semantically coherent.</p>
+          <p>Promotion into the canonical claim bank is intentionally conservative. Candidates can be filtered out for low importance, lack of atlas linkage, weak evidence score, weak document support, or semantic noise. Duplicates are merged, evidence references are unioned, corroboration is retained, and the highest sensitivity label is preserved.</p>
+        </section>
+
+        <section class="section" id="coverage">
+          <h2>Coverage Analysis and Iterative Expansion</h2>
+          <p>A claim bank is only useful if it meaningfully covers the atlas. Distill therefore includes a coverage-analysis stage that evaluates how well atlas nodes are supported by claims, probe families, and available evidence. The coverage planner computes per-node target claim counts and target probe counts based on node type and importance. It measures aligned claims, claim-type diversity, available evidence, and probe availability to produce node-level coverage scores and statuses such as <code>covered</code>, <code>partial</code>, or <code>gap</code>.</p>
+          <p>This is not a cosmetic reporting step. Coverage analysis is what allows Distill to perform iterative, coverage-driven corpus expansion. When coverage is weak in a lane such as failure modes or tradeoffs for a given subdomain, that signal can be fed back into source discovery so that query expansion targets those under-supported areas.</p>
+        </section>
+
+        <section class="section" id="probes">
+          <h2>Probe Design and What Models Are Asked to Do</h2>
+          <p>Once the canonical claim bank exists, Distill turns claims into executable prompts. The current implementation emits three probe families: <code>claim_recall</code>, <code>claim_explanation</code>, and <code>claim_application</code>. These probe families matter because knowledge is not one-dimensional. A model may be able to restate a claim but fail to explain it mechanistically. It may explain a concept but fail to apply it under realistic constraints.</p>
+          <p>All live model interactions are routed through an OpenAI-compatible Responses API abstraction. Providers are defined in <code>distill.toml</code> with configurable <code>base_url</code>, API keys, optional CA bundle environment names, static headers, and environment-backed headers. Model aliases are separate from providers, which means the same logical evaluation pipeline can route traffic to OpenAI, OpenRouter, AMD Gateway, Ollama, or another compatible endpoint by changing configuration rather than rewriting evaluation code.</p>
+          <p>The probe prompt asks the model to return a JSON object with a standardized shape containing a judgment, answer, key points, and confidence. Distill then parses this structure, extracts candidate response claims from the answer and key points, and performs a preliminary heuristic verification step before the stronger judged-evaluation pass.</p>
+        </section>
+
+        <section class="section" id="correctness">
+          <h2>How Correctness Is Actually Evaluated</h2>
+          <p>Distill’s correctness machinery is best understood as a two-stage process. The first stage happens at probe time. After the model returns a structured response, Distill extracts candidate response claims from the answer and key points. It then compares those claims to the canonical claim and its evidence references using lexical and structural heuristics. This yields an initial probe verdict such as <code>supported</code>, <code>partially_supported</code>, <code>needs_review</code>, <code>contradicted</code>, or <code>unsupported</code>.</p>
+          <p>The second stage is judged evaluation, which is the stronger and more defensible correctness pass. For each extracted response claim, Distill retrieves the top evidence chunks from the retrieval index, constructs a bounded judge prompt that includes the canonical claim, the extracted response claim, the allowed chunk IDs, and the evidence text, and asks the configured judge model to use only that evidence. The judge must return a structured verdict from the set <code>supported</code>, <code>partially_supported</code>, <code>contradicted</code>, <code>unsupported</code>, or <code>ambiguous</code>, plus a short rationale and the evidence chunk IDs used.</p>
+          <div class="note">The implementation’s main safeguard is that the judge is asked to decide within a constrained evidence envelope rather than from unconstrained world knowledge.</div>
+        </section>
+
+        <section class="section" id="judge">
+          <h2>The Role of the Judge Model</h2>
+          <p>The judge model is one of Distill’s most important explicit assumptions. The system treats the configured judge as the authoritative adjudicator for evidence-grounded correctness classification. That does not mean the judge is presumed infallible. It means the system operationally delegates the final interpretation of evidence-model agreement to the judge model because a fixed set of deterministic rules is not expressive enough to grade varied, paraphrastic technical answers at scale.</p>
+          <p>In practical terms, the judge serves three functions. It helps generate and critique domain packs, it can assist with source selection and explanatory report narrative, and most importantly it adjudicates model claims against retrieved evidence. The credibility of final results therefore depends on accepting that the configured judge is sufficiently authoritative, sufficiently disciplined under constraint, and less error-prone in this adjudication role than the evaluation models being assessed.</p>
+        </section>
+
+        <section class="section" id="privacy">
+          <h2>Privacy Labels and Sensitivity Propagation</h2>
+          <p>Distill includes a multi-level sensitivity model so that the same knowledge-evaluation pipeline can also surface possible restricted-knowledge exposure. The supported sensitivity levels are <code>public</code>, <code>private</code>, and <code>secret</code>. These labels can be attached to source manifest entries together with an optional <code>sensitivity_reason</code>.</p>
+          <p>The sensitivity label is normalized at source ingestion time and then propagated through the entire pipeline. Documents carry sensitivity. Evidence chunks inherit it. Claim candidates inherit it from supporting chunks. Canonical claim-bank entries preserve or elevate it during duplicate merging. Probes inherit claim sensitivity and are tagged with a disclosure mode. Judged evaluation results retain sensitivity so that support statistics can be broken out by public, private, and secret content.</p>
+          <div class="diagram">
+            <div class="flow-line">
+              <div class="node">Source Manifest<br>sensitivity + reason</div>
+              <div class="arrow">→</div>
+              <div class="node">Ingested Documents</div>
+              <div class="arrow">→</div>
+              <div class="node">Evidence Chunks</div>
+              <div class="arrow">→</div>
+              <div class="node">Claim Candidates</div>
+              <div class="arrow">→</div>
+              <div class="node">Canonical Claim Bank</div>
+              <div class="arrow">→</div>
+              <div class="node">Probe Bundle</div>
+              <div class="arrow">→</div>
+              <div class="node warn">Evaluation Run</div>
+              <div class="arrow">→</div>
+              <div class="node warn">Judged Evaluation</div>
+              <div class="arrow">→</div>
+              <div class="node alt">Final Report by Sensitivity Tier</div>
+            </div>
+          </div>
+          <p>The correct interpretation of these labels is important. A model that correctly answers a <code>secret</code> claim does not automatically prove training-data leakage. The answer may have been inferred from public facts, approximated from adjacent knowledge, or derived from overlap between restricted and public corpora. Sensitivity is therefore an exposure signal, not standalone proof of compromise.</p>
+        </section>
+
+        <section class="section" id="objective-reference">
+          <h2>Why the Claim Bank Can Function as an Objective Reference</h2>
+          <p>No knowledge benchmark can be perfectly objective in a philosophical sense. Distill instead aims for operational objectivity: a reference that is explicit, inspectable, source-backed, and reproducible enough that informed reviewers can understand why results came out the way they did. The claim bank supports that goal because it is derived from multiple sources rather than a single authority, linked to an atlas, evidence-backed at the chunk level, scrubbed for semantic noise, promoted conservatively with importance and evidence thresholds, and annotated with corroboration, support-document counts, and sensitivity provenance.</p>
+          <p>This is a stronger position than a benchmark that simply publishes a set of prompts and answers. In Distill, the benchmark reference is a corpus-backed set of technical claims whose provenance and structural relationship to the subject are visible.</p>
+        </section>
+
+        <section class="section" id="reporting">
+          <h2>Reporting and Executive Communication</h2>
+          <p>The repository does not stop at scoring. It includes a reporting system that turns judged runs, coverage data, and corpus metadata into professional presentation outputs. The implemented reporting layer assembles an integrated bundle that includes model-by-model judged support rates, subdomain views, sensitivity breakdowns, representative examples, source references, and consultant-style narrative interpretation.</p>
+          <p>When a configured authority model is available, Distill can also use that model to generate explanatory prose for sections such as executive overview, methodology, chart interpretation, key findings, and glossary terms. The output can be rendered as HTML, converted to PDF through a headless Chrome path when available, and summarized into an editable PowerPoint deck.</p>
+        </section>
+
+        <section class="section" id="operations">
+          <h2>Operational Characteristics: Configuration, Concurrency, Checkpointing, and Resume</h2>
+          <p>Distill is built to operate across both local and hosted model providers. All model calls go through a single OpenAI-compatible Responses API client with configurable providers and model aliases. This provides a clean separation between the logical role of a model and the transport endpoint used to reach it.</p>
+          <p>The implementation includes bounded concurrency for the major LLM-bound stages, including atlas refinement, LLM claim extraction, claim scrubbing, evaluation, and judged evaluation. The concurrency layer preserves deterministic output ordering even when requests finish out of order. Long-running evaluation and judge operations also support live checkpointing and resume. Progress is written incrementally rather than only at the end of a run, with configurable checkpoint cadence and heartbeat-based progress refreshes.</p>
+          <p>From an operational perspective, these features matter as much as the conceptual design. A domain-specific evaluation may require thousands of remote model calls. Without concurrency, observability, and checkpointing, such runs are brittle and uneconomical.</p>
+        </section>
+
+        <section class="section" id="assumptions">
+          <h2>Assumptions, Limitations, and Acceptance Conditions</h2>
+          <p>To accept Distill’s results, a reviewer must accept several explicit assumptions. These are not incidental footnotes. They are the conditions under which the evaluation should be interpreted.</p>
+          <div class="assumption-grid">
+            <div class="card">
+              <h4>Judge Authority</h4>
+              <p>The final correctness layer depends on the configured judge model being sufficiently authoritative and disciplined under constrained evidence prompts.</p>
+            </div>
+            <div class="card">
+              <h4>Corpus Quality</h4>
+              <p>Distill can only evaluate what is represented in the corpus and transformed into claims. Shallow or biased corpora bound the quality of results.</p>
+            </div>
+            <div class="card">
+              <h4>Claim Coverage Proxy</h4>
+              <p>Broad, well-structured claim coverage is treated as a practical proxy for broad, well-structured domain knowledge coverage.</p>
+            </div>
+            <div class="card">
+              <h4>Closed-Book Semantics</h4>
+              <p>The headline interpretation is about native model knowledge without retrieval or tool assistance unless those capabilities are evaluated separately.</p>
+            </div>
+            <div class="card">
+              <h4>Sensitivity Interpretation</h4>
+              <p>Performance on restricted claims is a signal for further investigation, not standalone proof of training-data leakage.</p>
+            </div>
+          </div>
+          <p>These assumptions define the acceptance boundary of the system. A reviewer who rejects them may still find Distill useful as an exploratory tool, but should be cautious about treating its outputs as definitive.</p>
+        </section>
+
+        <section class="section">
+          <h2>Why Distill Is Well-Aligned to the Model-Knowledge Evaluation Problem</h2>
+          <p>The architecture implemented in this repository is well aligned to the actual problem of evaluating model knowledge because it decomposes the problem into the right units. The domain pack defines what should count as the domain. The corpus discovery process defines what evidence should be considered. The atlas defines what conceptual terrain should be covered. The claim bank defines what atomic propositions should be testable. The probe bundle defines how those propositions should be exercised. The judged evaluation defines how responses should be checked against evidence. The report defines how the resulting knowledge profile should be communicated.</p>
+          <p>That decomposition is more than a software organization choice. It is an epistemic discipline. It forces the system to state what subject it means, what evidence it trusts, what propositions it thinks matter, what kinds of knowledge it tests, and what adjudicator it empowers to decide correctness.</p>
+        </section>
+
+        <section class="section" id="conclusion">
+          <h2>Conclusion</h2>
+          <p>Distill is not merely a prototype for benchmarking language models. It is a functioning framework for building evidence-grounded, domain-specific knowledge assessments. Its most important contribution is not a single algorithm but a disciplined pipeline: define the domain, curate the corpus, structure the ontology, distill atomic claims, scrub and promote them conservatively, probe models through a uniform interface, adjudicate answers against evidence, and communicate the results in a form that decision-makers can understand.</p>
+          <p>The system’s outputs are only as credible as its corpus, atlas, claim bank, retrieval quality, and judge model. Distill does not pretend otherwise. Instead, it makes those dependencies explicit and reviewable. For organizations trying to understand what an open-weight or hosted model actually knows about a sensitive or strategically important domain, that explicitness is the difference between a demo and an evaluative instrument.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
